@@ -59,9 +59,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
-# Database
-_db_url = config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
-DATABASES = {"default": dj_database_url.parse(_db_url, conn_max_age=600)}
+# Database — SQLite en local, PostgreSQL en prod (via DATABASE_URL sur Render)
+_db_url = config("DATABASE_URL", default="").strip()
+if _db_url:
+    DATABASES = {"default": dj_database_url.parse(_db_url, conn_max_age=600)}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Auth
 AUTH_USER_MODEL = "scholarpath.User"
