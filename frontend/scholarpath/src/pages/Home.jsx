@@ -1,35 +1,39 @@
 import { Link } from "react-router-dom";
+import {
+  BookOpen, ShieldCheck, Compass, TrendingUp, Users, FileOutput,
+  GraduationCap, ArrowRight, CheckCircle,
+} from "lucide-react";
 import Button from "../components/Button";
 import "../styles/home.css";
 
 const FEATURES = [
   {
-    icon: "📚",
+    icon: BookOpen,
     title: "Suivi longitudinal",
     desc: "Construisez votre profil dès la 6ème. Résultats, activités, projets, certifications — tout est enregistré et exploitable.",
   },
   {
-    icon: "✅",
+    icon: ShieldCheck,
     title: "Données vérifiées",
     desc: "Distinguez ce qui est déclaré, documenté et vérifié. Un indice de fiabilité contextualise chaque information de votre profil.",
   },
   {
-    icon: "🎯",
+    icon: Compass,
     title: "Orientation intelligente",
     desc: "L'IA analyse votre parcours complet et recommande les filières qui correspondent vraiment à votre profil réel.",
   },
   {
-    icon: "📈",
+    icon: TrendingUp,
     title: "Plan de progression",
     desc: "Détectez les écarts entre votre profil actuel et les filières visées, avec des actions concrètes et priorisées.",
   },
   {
-    icon: "👨‍👩‍👧",
+    icon: Users,
     title: "Espace famille & mentors",
     desc: "Parents et enseignants disposent d'une vue synthétique pour un dialogue éducatif fondé sur des faits.",
   },
   {
-    icon: "📋",
+    icon: FileOutput,
     title: "Portfolio exportable",
     desc: "Générez automatiquement un portfolio exploitable pour Parcoursup, concours et dossiers d'admission.",
   },
@@ -41,7 +45,9 @@ export default function Home() {
       {/* Navbar */}
       <nav className="home-nav">
         <div className="home-nav-logo">
-          <div className="home-nav-logo-icon">SP</div>
+          <div className="home-nav-logo-icon">
+            <GraduationCap size={16} color="white" />
+          </div>
           <span>ScholarPath</span>
         </div>
         <div className="home-nav-links">
@@ -60,9 +66,9 @@ export default function Home() {
 
       {/* Hero */}
       <section className="home-hero">
-        <div>
+        <div className="hero-content">
           <div className="hero-label">
-            <span>🎓</span>
+            <GraduationCap size={14} />
             <span>Orientation intelligente</span>
           </div>
           <h1 className="hero-title">
@@ -77,7 +83,7 @@ export default function Home() {
           </p>
           <div className="hero-cta">
             <Button variant="primary" size="lg" onClick={() => window.location.href = "/register"}>
-              Créer mon profil gratuit →
+              Créer mon profil gratuit <ArrowRight size={16} />
             </Button>
             <Button variant="outline" size="lg" onClick={() => window.location.href = "/login"}>
               Se connecter
@@ -101,7 +107,7 @@ export default function Home() {
             <div className="mockup-main">
               <div className="mockup-title-bar" />
               <div className="mockup-cards">
-                {[0,1,2,3].map(i => (
+                {[0, 1, 2, 3].map((i) => (
                   <div key={i} className="mockup-card">
                     <div className="mockup-card-line" />
                     <div className="mockup-card-line short" />
@@ -136,11 +142,13 @@ export default function Home() {
             pour des choix d'orientation solides et lucides.
           </p>
           <div className="features-grid">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="feature-card">
-                <div className="feature-icon">{f.icon}</div>
-                <h3 className="feature-title">{f.title}</h3>
-                <p className="feature-desc">{f.desc}</p>
+            {FEATURES.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="feature-card">
+                <div className="feature-icon">
+                  <Icon size={22} color="var(--green-dark)" />
+                </div>
+                <h3 className="feature-title">{title}</h3>
+                <p className="feature-desc">{desc}</p>
               </div>
             ))}
           </div>
@@ -151,19 +159,17 @@ export default function Home() {
       <section className="home-cta-section">
         <h2>Prêt à prendre le contrôle de votre orientation ?</h2>
         <p>Rejoignez ScholarPath et construisez un profil qui vous ressemble vraiment.</p>
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={() => window.location.href = "/register"}
-        >
-          Créer mon compte gratuitement →
+        <Button variant="primary" size="lg" onClick={() => window.location.href = "/register"}>
+          Créer mon compte gratuitement <ArrowRight size={16} />
         </Button>
       </section>
 
       {/* Footer */}
       <footer className="home-footer">
         <div className="home-nav-logo">
-          <div className="home-nav-logo-icon">SP</div>
+          <div className="home-nav-logo-icon">
+            <GraduationCap size={14} color="white" />
+          </div>
           <span>ScholarPath</span>
         </div>
         <span>© {new Date().getFullYear()} ScholarPath — Orientation intelligente</span>

@@ -1,7 +1,7 @@
 .topbar {
   position: fixed;
   top: 0;
-  left: var(--sidebar-width);
+  left: var(--sidebar-w);
   right: 0;
   height: var(--topbar-height);
   background: var(--white);
@@ -9,8 +9,36 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  z-index: 100;
+  padding: 0 24px;
+  z-index: 200;
+  transition: left 0.25s ease;
+}
+
+/* Adjust when sidebar is collapsed */
+.sidebar-collapsed .topbar {
+  left: var(--sidebar-w-collapsed);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.topbar-hamburger:hover {
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 .topbar-title {
@@ -22,10 +50,39 @@
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .topbar-greeting {
   font-size: 0.875rem;
   color: var(--text-secondary);
+}
+
+.topbar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .topbar {
+    left: 0 !important;
+    padding: 0 16px;
+  }
+
+  .topbar-hamburger {
+    display: flex;
+  }
+
+  .topbar-greeting {
+    display: none;
+  }
 }
