@@ -4,16 +4,17 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-# Modèles Groq valides (mis à jour avril 2025)
+# Modèles Groq actifs (avril 2025) — llama3-70b-8192 et llama3-8b-8192 désactivés
 GROQ_VALID_MODELS = [
-    "llama3-70b-8192",
-    "llama3-8b-8192",
-    "llama-3.1-8b-instant",
+    "llama-3.3-70b-versatile",   # recommandé — remplace llama3-70b-8192
     "llama-3.1-70b-versatile",
-    "llama-3.3-70b-versatile",
-    "mixtral-8x7b-32768",
+    "llama-3.1-8b-instant",      # recommandé rapide — remplace llama3-8b-8192
+    "llama-3.2-90b-vision-preview",
+    "llama-3.2-11b-vision-preview",
     "gemma2-9b-it",
+    "gemma-7b-it",
 ]
+GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile"
 
 
 def run_prompt(system_prompt: str, user_context: str, max_tokens: int = 1500) -> str:
@@ -22,7 +23,7 @@ def run_prompt(system_prompt: str, user_context: str, max_tokens: int = 1500) ->
     Lève une exception si la clé est absente ou si l'appel échoue.
     """
     api_key = getattr(settings, "GROQ_API_KEY", "").strip()
-    model   = getattr(settings, "GROQ_MODEL", "llama3-70b-8192").strip()
+    model   = getattr(settings, "GROQ_MODEL", GROQ_DEFAULT_MODEL).strip()
 
     # ── Validation préventive ──────────────────────────────────────
     if not api_key:
@@ -32,9 +33,10 @@ def run_prompt(system_prompt: str, user_context: str, max_tokens: int = 1500) ->
 
     if model not in GROQ_VALID_MODELS:
         logger.warning(
-            "Modèle '%s' inconnu sur Groq. Basculement vers llama3-70b-8192.", model
+            "Modèle '%s' inconnu ou désactivé sur Groq. Basculement vers %s.",
+            model, GROQ_DEFAULT_MODEL,
         )
-        model = "llama3-70b-8192"
+        model = GROQ_DEFAULT_MODEL
 
     # ── Appel Groq ─────────────────────────────────────────────────
     try:

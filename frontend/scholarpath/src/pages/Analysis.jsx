@@ -84,10 +84,13 @@ function ErrorBlock({ message, onTest }) {
               fontSize: "0.78rem", overflowX: "auto", marginBottom: 10,
             }}>
 {`GROQ_API_KEY=gsk_votre_cle_ici
-GROQ_MODEL=llama3-70b-8192`}
+GROQ_MODEL=llama-3.3-70b-versatile`}
             </pre>
-            <p>Modèles Groq valides : <code>llama3-70b-8192</code>, <code>llama3-8b-8192</code>,
-              <code>llama-3.1-8b-instant</code>, <code>mixtral-8x7b-32768</code>
+            <p>Modèles Groq actifs (2025) : <code>llama-3.3-70b-versatile</code> ✓,{" "}
+              <code>llama-3.1-8b-instant</code> ✓, <code>gemma2-9b-it</code> ✓
+            </p>
+            <p style={{ marginTop: 4, color: "#b91c1c" }}>
+              ✗ Désactivés : <code>llama3-70b-8192</code>, <code>llama3-8b-8192</code>, <code>mixtral-8x7b-32768</code>
             </p>
             <p style={{ marginTop: 8, color: "#991b1b" }}>
               ⚠️ Après toute modification du <code>.env</code>, relancez le serveur Django.
