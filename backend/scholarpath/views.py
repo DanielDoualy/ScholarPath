@@ -218,8 +218,13 @@ class AnalyzeProfileView(APIView):
 
     def post(self, request):
         profile, _ = StudentProfile.objects.get_or_create(user=request.user)
-        result = analyze_profile(profile)
-        return Response(result)
+        try:
+            result = analyze_profile(profile)
+            return Response(result)
+        except RuntimeError as exc:
+            return Response({"error": str(exc)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception as exc:
+            return Response({"error": f"Erreur interne : {exc}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class RecommendView(APIView):
@@ -227,8 +232,24 @@ class RecommendView(APIView):
 
     def post(self, request):
         profile, _ = StudentProfile.objects.get_or_create(user=request.user)
-        recs = recommend_fields(profile)
-        return Response(recs)
+        try:
+            recs = recommend_fields(profile)
+            return Response(recs)
+        except RuntimeError as exc:
+            return Response({"error": str(exc)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception as exc:
+            return Response({"error": f"Erreur interne : {exc}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AITestView(APIView):
+    """Endpoint de diagnostic — vérifie que Groq répond correctement."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from .services.ai_service import test_connection
+        result = test_connection()
+        http_status = status.HTTP_200_OK if result["ok"] else status.HTTP_503_SERVICE_UNAVAILABLE
+        return Response(result, status=http_status)
 
 
 #  Dashboard

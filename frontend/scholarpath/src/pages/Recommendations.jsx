@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Target, RefreshCw } from "lucide-react";
+import { Target, RefreshCw, AlertTriangle } from "lucide-react";
 import Topbar from "../components/Topbar";
 import Button from "../components/Button";
 import Loader from "../components/Loader";
@@ -7,9 +7,10 @@ import { aiService } from "../services/aiService";
 import api from "../services/api";
 
 export default function Recommendations() {
-  const [recs, setRecs]           = useState([]);
-  const [loading, setLoading]     = useState(true);
+  const [recs, setRecs]             = useState([]);
+  const [loading, setLoading]       = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [error, setError]           = useState("");
 
   const load = () =>
     api.get("/recommendations/")
@@ -20,9 +21,16 @@ export default function Recommendations() {
 
   const handleGenerate = async () => {
     setGenerating(true);
-    await aiService.recommend();
-    await load();
-    setGenerating(false);
+    setError("");
+    try {
+      await aiService.recommend();
+      await load();
+    } catch (err) {
+      const msg = err?.response?.data?.error ?? err?.response?.data?.detail ?? "";
+      setError(msg || "Erreur IA. Vérifiez votre clé Groq et le modèle dans backend/.env.");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   if (loading) return <><Topbar title="Orientations" /><Loader center size={40} /></>;
@@ -42,6 +50,18 @@ export default function Recommendations() {
             {generating ? "Génération…" : <><RefreshCw size={14} /> Regénérer</>}
           </Button>
         </div>
+
+        {error && (
+          <div style={{
+            display: "flex", gap: 10, alignItems: "flex-start",
+            background: "#fff5f5", border: "1px solid #ffcdd2",
+            borderRadius: 10, padding: "12px 16px", marginBottom: 16,
+            fontSize: "0.875rem", color: "#c62828",
+          }}>
+            <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+            {error}
+          </div>
+        )}
 
         {recs.length === 0 ? (
           <div className="card" style={{ textAlign: "center", padding: "56px 32px" }}>

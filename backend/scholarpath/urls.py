@@ -33,7 +33,8 @@ urlpatterns = [
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
     # AI
     path("ai/analyze-profile/", views.AnalyzeProfileView.as_view(), name="ai-analyze"),
-    path("ai/recommend/", views.RecommendView.as_view(), name="ai-recommend"),
+    path("ai/recommend/",        views.RecommendView.as_view(),       name="ai-recommend"),
+    path("ai/test/",             views.AITestView.as_view(),           name="ai-test"),
     # Router
     path("", include(router.urls)),
 ]

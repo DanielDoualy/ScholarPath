@@ -1,27 +1,151 @@
 import { useState } from "react";
-import { Brain, Zap, TrendingUp, AlertTriangle, RefreshCw, Bell, CheckCircle } from "lucide-react";
+import {
+  Brain, Zap, TrendingUp, AlertTriangle, RefreshCw,
+  Bell, CheckCircle, Wifi, WifiOff, ChevronDown, ChevronUp,
+} from "lucide-react";
 import Topbar from "../components/Topbar";
 import Button from "../components/Button";
 import { aiService } from "../services/aiService";
 
+/* ── Composant carte résultat ─────────────────────────────────── */
+function ResultCard({ icon: Icon, iconBg, iconColor, title, titleColor, items, empty, renderItem }) {
+  return (
+    <div className="card">
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: 9,
+          background: iconBg,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <Icon size={16} color={iconColor} />
+        </div>
+        <span className="card-title" style={{ margin: 0, color: titleColor }}>{title}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.length === 0
+          ? <span className="text-muted">{empty}</span>
+          : items.map((item, i) => renderItem(item, i))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Bloc d'erreur ────────────────────────────────────────────── */
+function ErrorBlock({ message, onTest }) {
+  const [testing, setTesting]   = useState(false);
+  const [testResult, setResult] = useState(null);
+  const [open, setOpen]         = useState(false);
+
+  const handleTest = async () => {
+    setTesting(true);
+    try {
+      const r = await aiService.testConnection();
+      setResult(r);
+    } catch {
+      setResult({ ok: false, error: "Impossible de joindre le serveur backend." });
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  return (
+    <div style={{
+      background: "#fff5f5", border: "1px solid #ffcdd2",
+      borderRadius: 12, padding: "16px 20px", marginBottom: 20,
+    }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+        <AlertTriangle size={18} color="#c62828" style={{ flexShrink: 0, marginTop: 2 }} />
+        <div style={{ flex: 1 }}>
+          <p style={{ fontWeight: 700, color: "#c62828", marginBottom: 4 }}>Erreur IA</p>
+          <p style={{ fontSize: "0.875rem", color: "#b71c1c" }}>{message}</p>
+        </div>
+      </div>
+
+      {/* Diagnostic rapide */}
+      <div style={{ marginTop: 14, borderTop: "1px solid #ffcdd2", paddingTop: 12 }}>
+        <button
+          onClick={() => setOpen(p => !p)}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            fontSize: "0.8rem", fontWeight: 600, color: "#c62828",
+            background: "none", border: "none", cursor: "pointer",
+          }}
+        >
+          {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          Aide au diagnostic
+        </button>
+
+        {open && (
+          <div style={{ marginTop: 12, fontSize: "0.82rem", color: "#7f1d1d", lineHeight: 1.7 }}>
+            <p style={{ fontWeight: 700, marginBottom: 6 }}>Vérifiez dans <code>backend/.env</code> :</p>
+            <pre style={{
+              background: "#1e293b", color: "#86efac",
+              padding: "10px 14px", borderRadius: 8,
+              fontSize: "0.78rem", overflowX: "auto", marginBottom: 10,
+            }}>
+{`GROQ_API_KEY=gsk_votre_cle_ici
+GROQ_MODEL=llama3-70b-8192`}
+            </pre>
+            <p>Modèles Groq valides : <code>llama3-70b-8192</code>, <code>llama3-8b-8192</code>,
+              <code>llama-3.1-8b-instant</code>, <code>mixtral-8x7b-32768</code>
+            </p>
+            <p style={{ marginTop: 8, color: "#991b1b" }}>
+              ⚠️ Après toute modification du <code>.env</code>, relancez le serveur Django.
+            </p>
+
+            <div style={{ marginTop: 12 }}>
+              <Button variant="outline" size="sm" loading={testing} onClick={handleTest}>
+                <Wifi size={13} /> Tester la connexion Groq
+              </Button>
+            </div>
+
+            {testResult && (
+              <div style={{
+                marginTop: 10, padding: "10px 14px",
+                borderRadius: 8,
+                background: testResult.ok ? "#f0fdf4" : "#fff5f5",
+                border: `1px solid ${testResult.ok ? "#bbf7d0" : "#ffcdd2"}`,
+                display: "flex", alignItems: "center", gap: 8,
+              }}>
+                {testResult.ok
+                  ? <><CheckCircle size={15} color="var(--green-dark)" />
+                      <span style={{ color: "var(--green-dark)", fontWeight: 600 }}>
+                        Connexion OK — modèle : {testResult.model}
+                      </span>
+                    </>
+                  : <><WifiOff size={15} color="#c62828" />
+                      <span style={{ color: "#c62828" }}>{testResult.error}</span>
+                    </>
+                }
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Page principale ──────────────────────────────────────────── */
 export default function Analysis() {
-  const [result, setResult] = useState(null);
+  const [result,  setResult]  = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error,   setError]   = useState("");
 
   const handleAnalyze = async () => {
     setLoading(true);
     setError("");
     try {
       const data = await aiService.analyzeProfile();
-      setResult(data);
-    } catch (err) {
-      const msg = err?.response?.data?.detail ?? err?.message ?? "";
-      if (err?.response?.status === 404) {
-        setError("Profil introuvable. Complétez d'abord votre profil dans l'onglet « Profil ».");
+      if (data.error) {
+        // Erreur renvoyée proprement par le backend (503 / 500)
+        setError(data.error);
       } else {
-        setError("Erreur lors de l'analyse. " + (msg || "Vérifiez que votre profil est renseigné."));
+        setResult(data);
       }
+    } catch (err) {
+      const serverMsg = err?.response?.data?.error ?? err?.response?.data?.detail ?? "";
+      setError(serverMsg || "Erreur inattendue. Relancez le serveur backend.");
     } finally {
       setLoading(false);
     }
@@ -33,17 +157,17 @@ export default function Analysis() {
       <div className="page-container">
         <p className="page-title">Analyse de profil IA</p>
         <p className="page-subtitle">
-          L'IA analyse l'ensemble de votre parcours pour identifier vos aptitudes dominantes
-          et la cohérence de votre profil.
+          L'IA analyse l'ensemble de votre parcours pour identifier vos aptitudes
+          dominantes et la cohérence de votre profil.
         </p>
+
+        {error && <ErrorBlock message={error} />}
 
         {!result ? (
           <div className="card" style={{ textAlign: "center", padding: "56px 32px" }}>
-            {/* Animated brain icon */}
             <div style={{
-              width: 72, height: 72,
+              width: 72, height: 72, borderRadius: 20,
               background: "linear-gradient(135deg, var(--green-light), #bbf7d0)",
-              borderRadius: 20,
               display: "flex", alignItems: "center", justifyContent: "center",
               margin: "0 auto 20px",
               boxShadow: "0 8px 24px rgba(34,197,94,0.2)",
@@ -54,24 +178,10 @@ export default function Analysis() {
             <h2 style={{ fontWeight: 800, fontSize: "1.3rem", marginBottom: 10 }}>
               Analysez votre profil avec l'IA
             </h2>
-            <p style={{ color: "var(--text-muted)", marginBottom: 28, maxWidth: 480, margin: "0 auto 28px", lineHeight: 1.7 }}>
-              L'analyse prend en compte tous vos résultats, centres d'intérêt, objectifs
+            <p style={{ color: "var(--text-muted)", maxWidth: 480, margin: "0 auto 28px", lineHeight: 1.7 }}>
+              L'analyse prend en compte vos résultats, centres d'intérêt, objectifs
               et activités pour produire une synthèse personnalisée.
             </p>
-
-            {error && (
-              <div style={{
-                display: "flex", alignItems: "flex-start", gap: 10,
-                background: "#fff5f5", color: "#c62828",
-                borderRadius: 10, padding: "12px 16px",
-                border: "1px solid #ffcdd2",
-                marginBottom: 20, maxWidth: 480, margin: "0 auto 20px",
-                textAlign: "left", fontSize: "0.875rem",
-              }}>
-                <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-                {error}
-              </div>
-            )}
 
             <Button variant="primary" size="lg" loading={loading} onClick={handleAnalyze}>
               {loading ? "Analyse en cours…" : <><Zap size={16} /> Lancer l'analyse IA</>}
@@ -80,15 +190,17 @@ export default function Analysis() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            {/* Hero résumé */}
+            {/* Résumé hero */}
             <div className="card" style={{
               background: "linear-gradient(135deg, var(--black) 0%, #1e293b 100%)",
-              border: "none",
-              padding: "28px 32px",
+              border: "none", padding: "28px 32px",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 <Brain size={18} color="var(--green)" />
-                <span style={{ color: "var(--green)", fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                <span style={{
+                  color: "var(--green)", fontSize: "0.8rem", fontWeight: 700,
+                  textTransform: "uppercase", letterSpacing: "0.05em",
+                }}>
                   Synthèse IA
                 </span>
               </div>
@@ -97,76 +209,49 @@ export default function Analysis() {
               </p>
             </div>
 
-            {/* 3-column cards */}
+            {/* 3 colonnes */}
             <div className="grid-3">
-              {/* Aptitudes */}
-              <div className="card">
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 9, background: "var(--green-light)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Zap size={16} color="var(--green-dark)" />
+              <ResultCard
+                icon={Zap} iconBg="var(--green-light)" iconColor="var(--green-dark)"
+                title="Aptitudes dominantes"
+                items={result.aptitudes_dominantes ?? []}
+                empty="Non disponible"
+                renderItem={(a, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--green)", flexShrink: 0 }} />
+                    <span style={{ fontSize: "0.875rem" }}>{a}</span>
                   </div>
-                  <span className="card-title" style={{ margin: 0 }}>Aptitudes dominantes</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(result.aptitudes_dominantes ?? []).length === 0 ? (
-                    <span className="text-muted">Non disponible</span>
-                  ) : (
-                    result.aptitudes_dominantes.map((a, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--green)", flexShrink: 0 }} />
-                        <span style={{ fontSize: "0.875rem" }}>{a}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+                )}
+              />
 
-              {/* Points forts */}
-              <div className="card">
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 9, background: "#f0fdf4", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <TrendingUp size={16} color="var(--green-dark)" />
+              <ResultCard
+                icon={TrendingUp} iconBg="#f0fdf4" iconColor="var(--green-dark)"
+                title="Points forts" titleColor="var(--green-dark)"
+                items={result.forces ?? []}
+                empty="Non disponible"
+                renderItem={(f, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, fontSize: "0.875rem", alignItems: "flex-start" }}>
+                    <CheckCircle size={14} color="var(--green)" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span>{f}</span>
                   </div>
-                  <span className="card-title" style={{ margin: 0, color: "var(--green-dark)" }}>Points forts</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(result.forces ?? []).length === 0 ? (
-                    <span className="text-muted">Non disponible</span>
-                  ) : (
-                    result.forces.map((f, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, fontSize: "0.875rem", alignItems: "flex-start" }}>
-                        <CheckCircle size={14} color="var(--green)" style={{ flexShrink: 0, marginTop: 2 }} />
-                        <span>{f}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+                )}
+              />
 
-              {/* Points à renforcer */}
-              <div className="card">
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 9, background: "#fff5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <AlertTriangle size={16} color="#c62828" />
+              <ResultCard
+                icon={AlertTriangle} iconBg="#fff5f5" iconColor="#c62828"
+                title="À renforcer" titleColor="#c62828"
+                items={result.faiblesses ?? []}
+                empty="Aucun point faible détecté"
+                renderItem={(f, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, fontSize: "0.875rem", alignItems: "flex-start" }}>
+                    <AlertTriangle size={13} color="#ef5350" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span>{f}</span>
                   </div>
-                  <span className="card-title" style={{ margin: 0, color: "#c62828" }}>À renforcer</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(result.faiblesses ?? []).length === 0 ? (
-                    <span className="text-muted">Non disponible</span>
-                  ) : (
-                    result.faiblesses.map((f, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, fontSize: "0.875rem", alignItems: "flex-start" }}>
-                        <AlertTriangle size={13} color="#ef5350" style={{ flexShrink: 0, marginTop: 2 }} />
-                        <span>{f}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+                )}
+              />
             </div>
 
-            {/* Coherence + Signaux */}
+            {/* Cohérence + Signaux */}
             <div className="grid-2">
               <div className="card">
                 <div className="card-title">Cohérence du profil</div>
@@ -184,7 +269,10 @@ export default function Analysis() {
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {result.signaux.map((s, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, fontSize: "0.875rem", padding: "8px 12px", background: "var(--surface-2)", borderRadius: 8 }}>
+                      <div key={i} style={{
+                        display: "flex", gap: 8, fontSize: "0.875rem",
+                        padding: "8px 12px", background: "var(--surface-2)", borderRadius: 8,
+                      }}>
                         <Bell size={13} color="var(--orange)" style={{ flexShrink: 0, marginTop: 2 }} />
                         <span>{s}</span>
                       </div>
@@ -195,7 +283,7 @@ export default function Analysis() {
             </div>
 
             <div>
-              <Button variant="outline" onClick={() => setResult(null)}>
+              <Button variant="outline" onClick={() => { setResult(null); setError(""); }}>
                 <RefreshCw size={14} /> Relancer une analyse
               </Button>
             </div>

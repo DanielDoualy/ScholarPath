@@ -17,15 +17,15 @@ def _build_subject_summary(profile: StudentProfile):
         subject_map[r.subject.name].append(pct)
 
     averages = {s: round(sum(v) / len(v), 1) for s, v in subject_map.items()}
-    strong = [s for s, a in averages.items() if a >= 14]
-    weak = [s for s, a in averages.items() if a < 10]
+    strong   = [s for s, a in averages.items() if a >= 14]
+    weak     = [s for s, a in averages.items() if a < 10]
     return averages, strong, weak
 
 
 def analyze_profile(profile: StudentProfile) -> dict:
     averages, strong, weak = _build_subject_summary(profile)
-    interests = list(profile.interests.values_list("name", flat=True))
-    goals = list(profile.goals.values_list("description", flat=True))
+    interests  = list(profile.interests.values_list("name", flat=True))
+    goals      = list(profile.goals.values_list("description", flat=True))
     activities = list(profile.activities.values_list("title", flat=True))
 
     context = USER_TEMPLATE.format(
@@ -38,22 +38,24 @@ def analyze_profile(profile: StudentProfile) -> dict:
         activities=", ".join(activities) or "Aucune",
     )
 
+    # Peut lever RuntimeError si Groq échoue — laissé remonter à la vue
     raw = run_prompt(SYSTEM_PROMPT, context)
 
     try:
-        # Extract JSON block if wrapped in markdown
+        # Extraire le bloc JSON si enveloppé dans des backticks markdown
         if "```" in raw:
             raw = raw.split("```")[1]
             if raw.startswith("json"):
                 raw = raw[4:]
         return json.loads(raw.strip())
-    except (json.JSONDecodeError, IndexError):
-        logger.warning("Failed to parse AI response as JSON: %s", raw[:200])
+    except (json.JSONDecodeError, IndexError) as exc:
+        logger.warning("Impossible de parser la réponse IA: %s", raw[:300])
+        # Retourner un résultat partiel plutôt que de crasher
         return {
             "aptitudes_dominantes": [],
             "forces": strong[:3],
             "faiblesses": weak[:3],
-            "coherence": "Analyse disponible après enrichissement du profil.",
+            "coherence": "L'IA a répondu mais le format JSON était inattendu.",
             "signaux": [],
-            "resume": raw[:500],
+            "resume": raw[:500] if raw else "Aucune réponse reçue.",
         }
