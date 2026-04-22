@@ -41,7 +41,7 @@ from .services.analysis_service import analyze_profile
 from .services.orientation_service import recommend_fields
 
 
-# ── Auth ─
+# Auth
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -56,7 +56,7 @@ class CurrentUserView(generics.RetrieveUpdateDestroyAPIView):
         return self.request.user
 
 
-# ── Profile ───────────────────────────────────────────────────────────────────
+# Profile
 
 class StudentProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = StudentProfileSerializer
@@ -67,7 +67,7 @@ class StudentProfileView(generics.RetrieveUpdateAPIView):
         return profile
 
 
-# ── Subjects ──────────────────────────────────────────────────────────────────
+# Subjects
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Subject.objects.all()
@@ -75,7 +75,7 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-# ── Academic records ──────────────────────────────────────────────────────────
+
 
 class AcademicRecordViewSet(viewsets.ModelViewSet):
     serializer_class = AcademicRecordSerializer
@@ -94,7 +94,7 @@ class AcademicRecordViewSet(viewsets.ModelViewSet):
         serializer.save(profile=profile)
 
 
-# ── Interests ─────────────────────────────────────────────────────────────────
+
 
 class InterestViewSet(viewsets.ModelViewSet):
     serializer_class = InterestSerializer
@@ -109,7 +109,7 @@ class InterestViewSet(viewsets.ModelViewSet):
         serializer.save(profile=profile)
 
 
-# ── Goals ─────────────────────────────────────────────────────────────────────
+
 
 class GoalViewSet(viewsets.ModelViewSet):
     serializer_class = GoalSerializer
