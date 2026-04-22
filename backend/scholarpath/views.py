@@ -41,7 +41,7 @@ from .services.analysis_service import analyze_profile
 from .services.orientation_service import recommend_fields
 
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# ── Auth ─
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -82,7 +82,7 @@ class AcademicRecordViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         qs = profile.academic_records.select_related("subject")
         year = self.request.query_params.get("year")
         if year:
@@ -90,7 +90,7 @@ class AcademicRecordViewSet(viewsets.ModelViewSet):
         return qs
 
     def perform_create(self, serializer):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
 
 
@@ -101,11 +101,11 @@ class InterestViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         return profile.interests.all()
 
     def perform_create(self, serializer):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
 
 
@@ -116,30 +116,30 @@ class GoalViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         return profile.goals.select_related("orientation_field")
 
     def perform_create(self, serializer):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
 
 
-# ── Activities ────────────────────────────────────────────────────────────────
+# Activities
 
 class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         return profile.activities.all()
 
     def perform_create(self, serializer):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
 
 
-# ── Orientation fields ────────────────────────────────────────────────────────
+# Orientation fields
 
 class OrientationFieldViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OrientationField.objects.all()
@@ -147,7 +147,7 @@ class OrientationFieldViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-# ── Documents ─────────────────────────────────────────────────────────────────
+#  Documents
 
 class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
@@ -160,40 +160,40 @@ class DocumentViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-# ── Recommendations ───────────────────────────────────────────────────────────
+# Recommendations
 
 class RecommendationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RecommendationSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         return profile.recommendations.select_related("orientation_field")
 
 
-# ── Gap analysis ──────────────────────────────────────────────────────────────
+# Gap analysis
 
 class GapAnalysisViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GapAnalysisSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         return profile.gap_analyses.select_related("orientation_field").prefetch_related("actions")
 
 
-# ── Progress ──────────────────────────────────────────────────────────────────
+# Progress
 
 class ProgressLogViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProgressLogSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        profile = get_object_or_404(StudentProfile, user=self.request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=self.request.user)
         return profile.progress_logs.all()
 
 
-# ── Notifications ─────────────────────────────────────────────────────────────
+# Notifications
 
 class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
@@ -211,13 +211,13 @@ class NotificationViewSet(viewsets.ModelViewSet):
         return Response({"status": "read"})
 
 
-# ── AI endpoints ──────────────────────────────────────────────────────────────
+# AI endpoints
 
 class AnalyzeProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        profile = get_object_or_404(StudentProfile, user=request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=request.user)
         result = analyze_profile(profile)
         return Response(result)
 
@@ -226,19 +226,19 @@ class RecommendView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        profile = get_object_or_404(StudentProfile, user=request.user)
+        profile, _ = StudentProfile.objects.get_or_create(user=request.user)
         recs = recommend_fields(profile)
         return Response(recs)
 
 
-# ── Dashboard summary ─────────────────────────────────────────────────────────
+#  Dashboard
 
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-        profile = get_object_or_404(StudentProfile, user=user)
+        profile, _ = StudentProfile.objects.get_or_create(user=user)
 
         records = profile.academic_records.select_related("subject")
         total = records.count()

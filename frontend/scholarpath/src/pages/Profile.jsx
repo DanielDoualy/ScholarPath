@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CheckCircle } from "lucide-react";
 import Topbar from "../components/Topbar";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
@@ -122,7 +123,11 @@ export default function Profile() {
                 <Button type="submit" variant="primary" loading={saving}>
                   Enregistrer
                 </Button>
-                {saved && <span style={{ color: "var(--green-dark)", fontSize: "0.875rem", fontWeight: 600 }}>✓ Sauvegardé</span>}
+                {saved && (
+                  <span style={{ color: "var(--green-dark)", fontSize: "0.875rem", fontWeight: 600, display: "flex", alignItems: "center", gap: 5 }}>
+                    <CheckCircle size={15} /> Sauvegardé
+                  </span>
+                )}
               </div>
             </form>
           </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Target, RefreshCw } from "lucide-react";
 import Topbar from "../components/Topbar";
 import Button from "../components/Button";
 import Loader from "../components/Loader";
@@ -6,8 +7,8 @@ import { aiService } from "../services/aiService";
 import api from "../services/api";
 
 export default function Recommendations() {
-  const [recs, setRecs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [recs, setRecs]           = useState([]);
+  const [loading, setLoading]     = useState(true);
   const [generating, setGenerating] = useState(false);
 
   const load = () =>
@@ -38,13 +39,21 @@ export default function Recommendations() {
             </p>
           </div>
           <Button variant="primary" size="sm" loading={generating} onClick={handleGenerate}>
-            {generating ? "Génération..." : "🔄 Regénérer"}
+            {generating ? "Génération…" : <><RefreshCw size={14} /> Regénérer</>}
           </Button>
         </div>
 
         {recs.length === 0 ? (
-          <div className="card" style={{ textAlign: "center", padding: "48px 32px" }}>
-            <div style={{ fontSize: "3rem", marginBottom: 16 }}>🎯</div>
+          <div className="card" style={{ textAlign: "center", padding: "56px 32px" }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: 18,
+              background: "var(--green-light)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 20px",
+              boxShadow: "0 6px 20px rgba(34,197,94,0.15)",
+            }}>
+              <Target size={30} color="var(--green-dark)" />
+            </div>
             <h2 style={{ fontWeight: 700, marginBottom: 8 }}>Aucune recommandation</h2>
             <p style={{ color: "var(--text-muted)", marginBottom: 24 }}>
               Générez vos recommandations personnalisées à partir de votre profil.
@@ -64,12 +73,14 @@ export default function Recommendations() {
                   color: i < 2 ? "white" : "var(--text-primary)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: "1.1rem", fontWeight: 800,
+                  flexShrink: 0,
+                  boxShadow: i === 0 ? "var(--shadow-green)" : "none",
                 }}>
                   #{r.rank}
                 </div>
 
                 {/* Info */}
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
                     <h3 style={{ fontWeight: 700, fontSize: "1.05rem" }}>{r.orientation_field_name}</h3>
                     <span className="badge badge-gray">{r.orientation_field_domain}</span>
@@ -80,10 +91,12 @@ export default function Recommendations() {
                 </div>
 
                 {/* Score */}
-                <div style={{ textAlign: "right", minWidth: 80 }}>
+                <div style={{ textAlign: "right", minWidth: 80, flexShrink: 0 }}>
                   <div style={{
                     fontSize: "1.75rem", fontWeight: 800,
-                    color: r.fit_score >= 80 ? "var(--green-dark)" : r.fit_score >= 60 ? "#f57c00" : "var(--text-primary)",
+                    color: r.fit_score >= 80 ? "var(--green-dark)"
+                         : r.fit_score >= 60 ? "#f57c00"
+                         : "var(--text-primary)",
                   }}>
                     {r.fit_score.toFixed(0)}%
                   </div>
@@ -91,7 +104,9 @@ export default function Recommendations() {
                   <div style={{ height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginTop: 6 }}>
                     <div style={{
                       height: "100%", width: `${r.fit_score}%`,
-                      background: r.fit_score >= 80 ? "var(--green)" : r.fit_score >= 60 ? "#ff9800" : "#ef5350",
+                      background: r.fit_score >= 80 ? "var(--green)"
+                               : r.fit_score >= 60 ? "#ff9800"
+                               : "#ef5350",
                       borderRadius: 3,
                     }} />
                   </div>
