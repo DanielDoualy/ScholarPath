@@ -2,15 +2,37 @@ import { useState, useEffect } from "react";
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip,
 } from "recharts";
+import { BookOpen, Trash2, Plus, X } from "lucide-react";
 import Topbar from "../components/Topbar";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
 import Loader from "../components/Loader";
 import { academicService } from "../services/academicService";
+import "../styles/academic.css";
 
 const TRIMESTERS = ["T1", "T2", "T3", "S1", "S2", "AN"];
 const STATUS_LABELS = { DECLARED: "Déclaré", DOCUMENTED: "Documenté", VERIFIED: "Vérifié" };
 const STATUS_CLASS  = { DECLARED: "badge-declared", DOCUMENTED: "badge-documented", VERIFIED: "badge-verified" };
+
+// Fallback subjects if API returns empty (before seeding completes)
+const FALLBACK_SUBJECTS = [
+  { id: "__math__",   name: "Mathématiques" },
+  { id: "__pc__",     name: "Physique-Chimie" },
+  { id: "__svt__",    name: "Sciences de la vie et de la Terre" },
+  { id: "__fr__",     name: "Français" },
+  { id: "__philo__",  name: "Philosophie" },
+  { id: "__hg__",     name: "Histoire-Géographie" },
+  { id: "__en__",     name: "Anglais (LV1)" },
+  { id: "__es__",     name: "Espagnol (LV2)" },
+  { id: "__eps__",    name: "Éducation physique et sportive" },
+  { id: "__ses__",    name: "Sciences économiques et sociales" },
+  { id: "__nsi__",    name: "Informatique (NSI)" },
+  { id: "__arts__",   name: "Arts plastiques" },
+  { id: "__music__",  name: "Musique" },
+  { id: "__techno__", name: "Technologie" },
+  { id: "__bio__",    name: "Biologie" },
+  { id: "__chimie__", name: "Chimie" },
+];
 
 export default function AcademicHistory() {
   const [records, setRecords] = useState([]);
@@ -28,7 +50,11 @@ export default function AcademicHistory() {
       academicService.getSubjects(),
     ]).then(([rec, sub]) => {
       setRecords(rec.results ?? rec);
-      setSubjects(sub.results ?? sub);
+      const fetched = sub.results ?? sub;
+      // Use API subjects if available, otherwise fall back to hardcoded list
+      setSubjects(fetched.length > 0 ? fetched : FALLBACK_SUBJECTS);
+    }).catch(() => {
+      setSubjects(FALLBACK_SUBJECTS);
     }).finally(() => setLoading(false));
 
   useEffect(() => { load(); }, []);
@@ -81,7 +107,7 @@ export default function AcademicHistory() {
             <p className="page-subtitle">Saisissez vos notes par matière et trimestre.</p>
           </div>
           <Button variant="primary" size="sm" onClick={() => setShowForm((p) => !p)}>
-            {showForm ? "Annuler" : "+ Ajouter une note"}
+            {showForm ? <><X size={14} /> Annuler</> : <><Plus size={14} /> Ajouter une note</>}
           </Button>
         </div>
 
@@ -89,7 +115,7 @@ export default function AcademicHistory() {
         {showForm && (
           <div className="card" style={{ marginBottom: 24 }}>
             <div className="card-title">Nouvelle note</div>
-            <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+            <form onSubmit={handleSubmit} className="academic-form-grid">
               <InputField label="Matière" id="subject" type="select" name="subject" value={form.subject} onChange={handleChange} required>
                 <option value="">Sélectionner...</option>
                 {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -108,47 +134,49 @@ export default function AcademicHistory() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24 }}>
+        <div className="academic-layout">
           {/* Records table */}
           <div className="card">
             <div className="card-title">Historique ({records.length} notes)</div>
             {records.length === 0 ? (
               <div className="empty-state">
-                <span style={{ fontSize: "2rem" }}>📊</span>
+                <div className="empty-state-icon"><BookOpen size={26} color="var(--text-muted)" /></div>
                 <p>Aucune note saisie pour l'instant.</p>
+                <span style={{ fontSize: "0.8rem" }}>Cliquez sur « Ajouter une note » pour commencer.</span>
               </div>
             ) : (
               <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+                <table className="academic-table">
                   <thead>
-                    <tr style={{ borderBottom: "2px solid var(--border)", textAlign: "left" }}>
+                    <tr>
                       {["Matière", "Année", "Période", "Note", "Statut", ""].map((h) => (
-                        <th key={h} style={{ padding: "8px 10px", fontWeight: 600, color: "var(--text-muted)", fontSize: "0.78rem", textTransform: "uppercase" }}>{h}</th>
+                        <th key={h}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {records.map((r) => (
-                      <tr key={r.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                        <td style={{ padding: "10px 10px", fontWeight: 500 }}>{r.subject_name}</td>
-                        <td style={{ padding: "10px 10px", color: "var(--text-muted)" }}>{r.school_year}</td>
-                        <td style={{ padding: "10px 10px" }}>{r.trimester}</td>
-                        <td style={{ padding: "10px 10px" }}>
+                      <tr key={r.id}>
+                        <td style={{ fontWeight: 500 }}>{r.subject_name}</td>
+                        <td style={{ color: "var(--text-muted)" }}>{r.school_year}</td>
+                        <td>{r.trimester}</td>
+                        <td>
                           <span style={{ fontWeight: 700, color: r.grade / r.max_grade >= 0.7 ? "var(--green-dark)" : r.grade / r.max_grade < 0.5 ? "#c62828" : "var(--text-primary)" }}>
                             {r.grade}/{r.max_grade}
                           </span>
                         </td>
-                        <td style={{ padding: "10px 10px" }}>
+                        <td>
                           <span className={`badge ${STATUS_CLASS[r.verification_status]}`}>
                             {STATUS_LABELS[r.verification_status]}
                           </span>
                         </td>
-                        <td style={{ padding: "10px 10px" }}>
+                        <td>
                           <button
                             onClick={() => handleDelete(r.id)}
-                            style={{ color: "#ef5350", fontSize: "0.8rem", cursor: "pointer", background: "none", border: "none" }}
+                            title="Supprimer"
+                            style={{ color: "#ef5350", cursor: "pointer", background: "none", border: "none", display: "flex", alignItems: "center" }}
                           >
-                            Suppr.
+                            <Trash2 size={15} />
                           </button>
                         </td>
                       </tr>

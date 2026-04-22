@@ -1,0 +1,60 @@
+/* ── AcademicHistory layout ─────────────────────────────────────── */
+.academic-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.academic-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* ── Table ──────────────────────────────────────────────────────── */
+.academic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.academic-table th {
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.academic-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.academic-table tr:last-child td { border-bottom: none; }
+
+.academic-table tr:hover td { background: var(--surface); }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .academic-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .academic-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .academic-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -5,16 +5,17 @@
 }
 
 .input-label {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
 
 .input-control {
   padding: 10px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border: 1.5px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
   background: var(--white);
   color: var(--text-primary);
   transition: border-color var(--transition), box-shadow var(--transition);
@@ -22,19 +23,18 @@
   outline: none;
 }
 
+.input-control::placeholder { color: var(--text-muted); }
+
 .input-control:focus {
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
 }
 
-.input-control.input-error { border-color: #ef5350; }
-.input-control.input-error:focus { box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.12); }
+.input-control.input-error { border-color: var(--red); }
+.input-control.input-error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
 
-.input-hint {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-.input-hint.error { color: #c62828; }
+.input-hint         { font-size: 0.75rem; color: var(--text-muted); }
+.input-hint.error   { color: #dc2626; }
 
-select.input-control { cursor: pointer; }
+select.input-control  { cursor: pointer; }
 textarea.input-control { resize: vertical; min-height: 80px; }

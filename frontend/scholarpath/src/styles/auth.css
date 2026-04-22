@@ -31,6 +31,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(34,197,94,0.5);
 }
 
 .auth-logo-text {
@@ -41,11 +42,12 @@
 
 .auth-tagline {
   font-size: 1.65rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.3;
   margin-bottom: 14px;
+  letter-spacing: -0.02em;
 }
-.auth-tagline span { color: var(--green); }
+.auth-tagline span { color: var(--green); text-shadow: 0 0 20px rgba(34,197,94,0.4); }
 
 .auth-desc {
   font-size: 0.875rem;
@@ -64,14 +66,6 @@
   color: rgba(255,255,255,0.75);
 }
 
-.auth-feature-dot {
-  width: 7px;
-  height: 7px;
-  background: var(--green);
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
 /* ── Right panel ───────────────────────────────────────────────── */
 .auth-right {
   flex: 1;
@@ -88,7 +82,16 @@
   padding: 36px 32px;
   width: 100%;
   max-width: 440px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+}
+
+.auth-feature-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(34,197,94,0.6);
 }
 
 .auth-card-title    { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }

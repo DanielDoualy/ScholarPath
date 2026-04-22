@@ -1,37 +1,33 @@
-/* ── Variables ─────────────────────────────────────────────────── */
 :root {
-  --sidebar-w: 240px;
+  --sidebar-w:           240px;
   --sidebar-w-collapsed: 64px;
 }
 
-/* ── Base ──────────────────────────────────────────────────────── */
+/* ── Base ───────────────────────────────────────────────────────── */
 .sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: var(--sidebar-w);
   height: 100vh;
-  background: var(--black);
+  background: #0f172a;
   display: flex;
   flex-direction: column;
   z-index: 300;
-  border-right: 1px solid #1a1a1a;
-  transition: width 0.25s ease;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
   overflow: hidden;
 }
 
-.sidebar.collapsed {
-  width: var(--sidebar-w-collapsed);
-}
+.sidebar.collapsed { width: var(--sidebar-w-collapsed); }
 
-/* ── Header ────────────────────────────────────────────────────── */
+/* ── Header ─────────────────────────────────────────────────────── */
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 14px 14px;
-  border-bottom: 1px solid #1a1a1a;
-  gap: 8px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 6px;
   min-height: 60px;
   flex-shrink: 0;
 }
@@ -40,60 +36,59 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0;
   flex: 1;
+  min-width: 0;
 }
 
 .sidebar-logo-icon {
   width: 34px;
   height: 34px;
   background: var(--green);
-  border-radius: 8px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(34,197,94,0.4);
 }
 
 .sidebar-logo-text {
   font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--white);
+  font-weight: 800;
+  color: #fff;
   white-space: nowrap;
-  overflow: hidden;
+  letter-spacing: -0.02em;
 }
 
-/* Toggle / close buttons */
 .sidebar-toggle-btn,
 .sidebar-close-btn {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255,255,255,0.4);
   transition: all var(--transition);
   flex-shrink: 0;
   cursor: pointer;
 }
-
 .sidebar-toggle-btn:hover,
 .sidebar-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--white);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
 }
 
 .mobile-only  { display: none; }
 .desktop-only { display: flex; }
 
-/* ── Nav ───────────────────────────────────────────────────────── */
+/* ── Nav ─────────────────────────────────────────────────────────── */
 .sidebar-nav {
   flex: 1;
   padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -102,33 +97,31 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 10px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 0.875rem;
+  padding: 9px 10px;
+  border-radius: 9px;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
   font-weight: 500;
   transition: all var(--transition);
   white-space: nowrap;
   overflow: hidden;
 }
-
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--white);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.9);
 }
-
 .sidebar-link.active {
-  background: rgba(76, 175, 80, 0.18);
+  background: rgba(34,197,94,0.15);
   color: var(--green);
+  font-weight: 600;
 }
 
 .sidebar-link-icon { flex-shrink: 0; }
-.sidebar-link-label { overflow: hidden; }
 
-/* ── Footer ────────────────────────────────────────────────────── */
+/* ── Footer ─────────────────────────────────────────────────────── */
 .sidebar-footer {
   padding: 12px 14px;
-  border-top: 1px solid #1a1a1a;
+  border-top: 1px solid rgba(255,255,255,0.06);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -140,14 +133,15 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--green);
-  color: white;
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(34,197,94,0.35);
 }
 
 .sidebar-user-info {
@@ -155,67 +149,62 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .sidebar-user-name {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: var(--white);
+  color: rgba(255,255,255,0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .sidebar-user-role {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .sidebar-logout {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255,255,255,0.35);
   transition: all var(--transition);
   flex-shrink: 0;
   cursor: pointer;
 }
-
 .sidebar-logout:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
 }
 
-/* ── Overlay (mobile) ──────────────────────────────────────────── */
+/* ── Overlay ─────────────────────────────────────────────────────── */
 .sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
   z-index: 299;
 }
 
-/* ── Responsive ────────────────────────────────────────────────── */
+/* ── Mobile ──────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .mobile-only  { display: flex; }
   .desktop-only { display: none; }
 
   .sidebar {
     left: -100%;
-    width: var(--sidebar-w) !important; /* always full width on mobile */
-    transition: left 0.25s ease;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+    width: var(--sidebar-w) !important;
+    transition: left 0.25s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 8px 0 32px rgba(0,0,0,0.4);
   }
-
-  .sidebar.mobile-open {
-    left: 0;
-  }
-
-  .sidebar-overlay {
-    display: block;
-  }
+  .sidebar.mobile-open { left: 0; }
+  .sidebar-overlay { display: block; }
 }
