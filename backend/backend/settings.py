@@ -145,10 +145,11 @@ GROQ_MODEL = config("GROQ_MODEL", default="llama-3.1-8b-instant")
 
 # Security (production)
 if not DEBUG:
+    # Render termine le SSL au niveau du proxy — ne pas rediriger en boucle
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
