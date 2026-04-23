@@ -33,6 +33,12 @@ media/
 staticfiles/
 *.pot
 
+# Virtual envs
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+
 # Environment
 .env
 .env.local

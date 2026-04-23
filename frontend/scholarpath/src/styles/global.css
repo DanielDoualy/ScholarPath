@@ -180,6 +180,15 @@ ul, ol { list-style: none; }
 .status-weak   { color: var(--red); font-weight: 700; }
 .status-avg    { color: var(--orange); font-weight: 700; }
 
+/* ── Inputs inline (anti zoom iOS) ──────────────────────────────── */
+@media (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 1rem !important; /* évite le zoom automatique iOS */
+  }
+}
+
 /* ── Section divider ─────────────────────────────────────────────── */
 .divider {
   height: 1px;
@@ -195,13 +204,20 @@ ul, ol { list-style: none; }
   align-items: start;
 }
 
+/* Carte identité sticky uniquement sur desktop */
+.profile-identity-card {
+  position: sticky;
+  top: 80px;
+}
+@media (max-width: 1024px) {
+  .profile-identity-card { position: static; }
+}
+
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 900px) {
+  /* Profile layout : colonne unique dès tablette */
   .profile-layout { grid-template-columns: 1fr; }
 }
 
@@ -216,4 +232,11 @@ ul, ol { list-style: none; }
 @media (max-width: 480px) {
   .card { padding: 16px; }
   .page-container { padding: 12px; }
+  .grid-2, .grid-3, .grid-4 { gap: 12px; }
+  .gap-24 { gap: 16px; }
+}
+
+@media (max-width: 375px) {
+  .card { padding: 12px; }
+  .page-container { padding: 8px; }
 }

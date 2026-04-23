@@ -312,5 +312,13 @@
 @media (max-width: 480px) {
   .hero-title { font-size: 1.75rem; }
   .hero-cta   { flex-direction: column; }
-  .hero-cta > * { width: 100%; text-align: center; }
+  .hero-cta > * { width: 100%; text-align: center; justify-content: center; }
+
+  .home-cta-section { padding: 40px 16px; }
+  .home-cta-section h2 { font-size: 1.35rem; }
+  .home-cta-section p  { font-size: 0.9rem; }
+
+  .home-footer { padding: 16px 12px; font-size: 0.75rem; gap: 8px; }
+
+  .feature-card { padding: 18px 16px; }
 }

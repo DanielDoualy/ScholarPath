@@ -12,7 +12,7 @@
 }
 
 .input-control {
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1.5px solid var(--border-dark);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
@@ -21,6 +21,7 @@
   transition: border-color var(--transition), box-shadow var(--transition);
   width: 100%;
   outline: none;
+  min-height: 44px; /* touch target */
 }
 
 .input-control::placeholder { color: var(--text-muted); }
@@ -37,4 +38,16 @@
 .input-hint.error   { color: #dc2626; }
 
 select.input-control  { cursor: pointer; }
-textarea.input-control { resize: vertical; min-height: 80px; }
+textarea.input-control { resize: vertical; min-height: 88px; }
+
+/* ── Mobile : éviter le zoom iOS (font-size >= 16px) ──────────── */
+@media (max-width: 768px) {
+  .input-control {
+    font-size: 1rem; /* iOS ne zoom pas si >= 16px */
+    padding: 12px 14px;
+  }
+  textarea.input-control {
+    min-height: 100px;
+    max-height: 50vh;
+  }
+}

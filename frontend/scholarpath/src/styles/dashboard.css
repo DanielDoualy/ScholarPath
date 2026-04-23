@@ -149,15 +149,29 @@
 }
 
 /* ── Responsive ─────────────────────────────────────────────────── */
+
+/* Tablettes larges */
 @media (max-width: 1100px) {
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Tablettes : grille principale en colonne */
 @media (max-width: 900px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-grid { grid-template-columns: 1fr; gap: 16px; }
 }
 
-@media (max-width: 480px) {
+/* Mobile */
+@media (max-width: 600px) {
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 14px 16px; }
   .stat-value { font-size: 1.5rem; }
+  .stat-label { font-size: 0.7rem; }
+  .stat-sub   { font-size: 0.72rem; }
+}
+
+/* Petits mobiles */
+@media (max-width: 400px) {
+  .dashboard-stats { grid-template-columns: 1fr; }
+  .subject-name  { max-width: 100px; font-size: 0.8rem; }
+  .subject-grade { min-width: 36px; font-size: 0.8rem; }
 }

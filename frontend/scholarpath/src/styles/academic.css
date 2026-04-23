@@ -37,24 +37,22 @@
 }
 
 .academic-table tr:last-child td { border-bottom: none; }
-
 .academic-table tr:hover td { background: var(--surface); }
 
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .academic-layout {
-    grid-template-columns: 1fr;
-  }
+  .academic-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .academic-form-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+  .academic-form-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
 }
 
 @media (max-width: 480px) {
-  .academic-form-grid {
-    grid-template-columns: 1fr;
-  }
+  .academic-form-grid { grid-template-columns: 1fr; gap: 10px; }
+
+  /* Table plus compacte sur mobile */
+  .academic-table { font-size: 0.78rem; }
+  .academic-table th { padding: 6px 8px; font-size: 0.7rem; }
+  .academic-table td { padding: 8px 8px; }
 }

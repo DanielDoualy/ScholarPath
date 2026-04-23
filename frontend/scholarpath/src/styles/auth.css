@@ -125,15 +125,30 @@
 
 /* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .auth-left { width: 340px; padding: 40px 28px; }
+  .auth-left { width: 320px; padding: 40px 24px; }
 }
 
 @media (max-width: 700px) {
   .auth-left { display: none; }
-  .auth-right { padding: 24px 16px; align-items: flex-start; padding-top: 40px; }
-  .auth-card  { padding: 28px 20px; box-shadow: none; border: none; max-width: 100%; }
+  .auth-right {
+    padding: 24px 16px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+  .auth-card {
+    padding: 28px 20px;
+    box-shadow: none;
+    border: none;
+    max-width: 100%;
+  }
+}
+
+/* auth-row en colonne dès 540px (évite les champs trop serrés) */
+@media (max-width: 540px) {
+  .auth-row { grid-template-columns: 1fr; }
+  .auth-form { gap: 12px; }
 }
 
 @media (max-width: 400px) {
-  .auth-row { grid-template-columns: 1fr; }
+  .auth-card { padding: 20px 16px; }
 }

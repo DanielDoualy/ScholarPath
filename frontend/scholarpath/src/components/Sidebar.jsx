@@ -38,6 +38,8 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
   };
 
   return (
+    <>
+    {mobileOpen && <div className="sidebar-overlay" onClick={onMobileClose} aria-hidden="true" />}
     <aside className={`sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`}>
       {/* Header row: logo + toggle */}
       <div className="sidebar-header">
@@ -99,5 +101,6 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
         </button>
       </div>
     </aside>
+    </>
   );
 }

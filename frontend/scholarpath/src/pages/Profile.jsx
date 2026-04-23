@@ -187,7 +187,7 @@ export default function Profile() {
         <div className="profile-layout">
 
           {/* ── Carte identité (sidebar) ──────────────────────── */}
-          <div className="card" style={{ alignSelf: "start", position: "sticky", top: 80 }}>
+          <div className="card profile-identity-card" style={{ alignSelf: "start" }}>
             <div style={{ textAlign: "center", marginBottom: 16 }}>
               <div style={{
                 width: 72, height: 72, borderRadius: "50%",
@@ -437,7 +437,7 @@ export default function Profile() {
               {showActForm && (
                 <form onSubmit={handleAddActivity}
                   style={{ background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 12, padding: 16, marginBottom: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
                     <InputField label="Intitulé *" id="act-title" name="title"
                       value={actForm.title} onChange={handleActChange}
                       placeholder="Ex : Délégué de classe, stage en entreprise…" required />

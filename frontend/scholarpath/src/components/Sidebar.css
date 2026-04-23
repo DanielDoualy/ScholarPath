@@ -62,8 +62,8 @@
 
 .sidebar-toggle-btn,
 .sidebar-close-btn {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -72,6 +72,9 @@
   transition: all var(--transition);
   flex-shrink: 0;
   cursor: pointer;
+  /* Touch-friendly minimum */
+  min-width: 36px;
+  min-height: 36px;
 }
 .sidebar-toggle-btn:hover,
 .sidebar-close-btn:hover {
@@ -97,7 +100,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 10px;
+  padding: 11px 10px;   /* augmenté pour touch */
   border-radius: 9px;
   color: rgba(255,255,255,0.5);
   font-size: 0.85rem;
@@ -105,6 +108,7 @@
   transition: all var(--transition);
   white-space: nowrap;
   overflow: hidden;
+  min-height: 44px;     /* touch target WCAG */
 }
 .sidebar-link:hover {
   background: rgba(255,255,255,0.07);
@@ -168,8 +172,10 @@
 }
 
 .sidebar-logout {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -186,12 +192,12 @@
 
 /* ── Overlay ─────────────────────────────────────────────────────── */
 .sidebar-overlay {
-  display: none;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(2px);
   z-index: 299;
+  /* Rendu uniquement si mobileOpen (géré en JSX) */
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────── */
@@ -201,10 +207,9 @@
 
   .sidebar {
     left: -100%;
-    width: var(--sidebar-w) !important;
+    width: min(var(--sidebar-w), 85vw) !important;
     transition: left 0.25s cubic-bezier(0.4,0,0.2,1);
     box-shadow: 8px 0 32px rgba(0,0,0,0.4);
   }
   .sidebar.mobile-open { left: 0; }
-  .sidebar-overlay { display: block; }
 }
