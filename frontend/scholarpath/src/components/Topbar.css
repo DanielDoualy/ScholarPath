@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  z-index: 200;
+  z-index: 400; /* au-dessus de l'overlay (z:299) et sidebar (z:300) */
   transition: left 0.25s ease;
 }
 
@@ -29,15 +29,23 @@
   display: none;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  /* Zone tactile généreuse pour iOS */
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   color: var(--text-secondary);
-  transition: all var(--transition);
+  transition: background var(--transition), color var(--transition);
   cursor: pointer;
+  /* iOS touch fixes */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* Empêche les événements tactiles d'être absorbés */
+  -webkit-user-select: none;
+  user-select: none;
 }
-.topbar-hamburger:hover {
-  background: var(--surface);
+.topbar-hamburger:hover,
+.topbar-hamburger:active {
+  background: var(--surface-2);
   color: var(--text-primary);
 }
 
@@ -75,7 +83,7 @@
 @media (max-width: 768px) {
   .topbar {
     left: 0 !important;
-    padding: 0 16px;
+    padding: 0 12px;
   }
 
   .topbar-hamburger {

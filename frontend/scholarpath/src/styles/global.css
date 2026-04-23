@@ -56,7 +56,18 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 img, svg { display: block; max-width: 100%; }
-button { cursor: pointer; border: none; background: none; font-family: inherit; }
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  /* iOS : supprime le délai 300ms et le flash bleu au tap */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+a {
+  -webkit-tap-highlight-color: transparent;
+}
 input, textarea, select { font-family: inherit; }
 ul, ol { list-style: none; }
 
