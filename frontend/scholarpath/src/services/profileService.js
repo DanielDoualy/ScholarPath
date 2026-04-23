@@ -9,4 +9,9 @@ export const profileService = {
   getInterests:    ()     => api.get("/interests/").then((r) => r.data.results ?? r.data),
   addInterest:     (data) => api.post("/interests/", data).then((r) => r.data),
   deleteInterest:  (id)   => api.delete(`/interests/${id}/`),
+
+  // Objectifs
+  getGoals:    ()     => api.get("/goals/").then((r) => r.data.results ?? r.data),
+  addGoal:     (data) => api.post("/goals/", data).then((r) => r.data),
+  deleteGoal:  (id)   => api.delete(`/goals/${id}/`),
 };

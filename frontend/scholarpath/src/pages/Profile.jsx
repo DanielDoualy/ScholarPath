@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { CheckCircle, Plus, X, Sparkles, Heart } from "lucide-react";
+import { CheckCircle, Plus, X, Sparkles, Heart, Target } from "lucide-react";
 import Topbar from "../components/Topbar";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
@@ -40,15 +40,23 @@ export default function Profile() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef();
 
+  // ── Objectifs ───────────────────────────────────────────────────
+  const [goals, setGoals]         = useState([]);
+  const [newGoalDesc, setNewGoalDesc]   = useState("");
+  const [newGoalYear, setNewGoalYear]   = useState("");
+  const [addingGoal, setAddingGoal]     = useState(false);
+
   // ── Chargement initial ──────────────────────────────────────────
   useEffect(() => {
     Promise.all([
       profileService.getStudentProfile(),
       profileService.getInterests(),
-    ]).then(([p, ints]) => {
+      profileService.getGoals(),
+    ]).then(([p, ints, gls]) => {
       setProfile(p);
       setForm({ level: p.level ?? "", bio: p.bio ?? "", languages: p.languages ?? "" });
       setInterests(ints);
+      setGoals(gls);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -90,6 +98,28 @@ export default function Profile() {
   const handleDeleteInterest = async (id) => {
     await profileService.deleteInterest(id);
     setInterests((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  // ── Ajouter un objectif ─────────────────────────────────────────
+  const handleAddGoal = async () => {
+    const desc = newGoalDesc.trim();
+    if (!desc) return;
+    setAddingGoal(true);
+    try {
+      const payload = { description: desc };
+      if (newGoalYear) payload.target_year = parseInt(newGoalYear, 10);
+      const created = await profileService.addGoal(payload);
+      setGoals((prev) => [...prev, created]);
+      setNewGoalDesc("");
+      setNewGoalYear("");
+    } finally {
+      setAddingGoal(false);
+    }
+  };
+
+  const handleDeleteGoal = async (id) => {
+    await profileService.deleteGoal(id);
+    setGoals((prev) => prev.filter((g) => g.id !== id));
   };
 
   // ── Suggestions filtrées ────────────────────────────────────────
@@ -136,6 +166,7 @@ export default function Profile() {
                 { label: "Complétion",  value: `${profile?.completion_score?.toFixed(0) ?? 0}%` },
                 { label: "Niveau",      value: profile?.level || "—" },
                 { label: "Intérêts",    value: `${interests.length} renseigné${interests.length > 1 ? "s" : ""}` },
+        { label: "Objectifs",   value: `${goals.length} déclaré${goals.length > 1 ? "s" : ""}` },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
                   <span style={{ color: "var(--text-muted)" }}>{label}</span>
@@ -315,6 +346,163 @@ export default function Profile() {
                           e.currentTarget.style.background = "var(--green-light)";
                           e.currentTarget.style.borderColor = "var(--green-mid)";
                           e.currentTarget.style.color = "var(--green-deeper)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "var(--surface-2)";
+                          e.currentTarget.style.borderColor = "var(--border)";
+                          e.currentTarget.style.color = "var(--text-secondary)";
+                        }}
+                      >
+                        + {s}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Objectifs ───────────────────────────────────── */}
+            <div className="card">
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Target size={16} color="#1d4ed8" />
+                </div>
+                <div>
+                  <div className="card-title" style={{ margin: 0 }}>Mes objectifs</div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                    L'IA s'en sert pour orienter les recommandations
+                  </div>
+                </div>
+              </div>
+
+              {/* Liste des objectifs */}
+              {goals.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                  {goals.map((goal) => (
+                    <div
+                      key={goal.id}
+                      style={{
+                        display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+                        gap: 12,
+                        padding: "10px 14px",
+                        background: "#eff6ff",
+                        border: "1px solid #bfdbfe",
+                        borderRadius: 10,
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, color: "#1e3a8a" }}>{goal.description}</div>
+                        {goal.target_year && (
+                          <div style={{ fontSize: "0.75rem", color: "#3b82f6", marginTop: 2 }}>
+                            Horizon : {goal.target_year}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteGoal(goal.id)}
+                        style={{
+                          display: "flex", alignItems: "center", flexShrink: 0,
+                          background: "none", border: "none", cursor: "pointer",
+                          color: "#93c5fd", padding: 2, lineHeight: 1,
+                          transition: "color 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = "#1d4ed8"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "#93c5fd"}
+                        title="Supprimer"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {goals.length === 0 && (
+                <div style={{ marginBottom: 16, padding: "12px 16px", background: "var(--surface-2)", borderRadius: 10, fontSize: "0.875rem", color: "var(--text-muted)" }}>
+                  Aucun objectif déclaré. L'IA personnalisera ses recommandations selon vos ambitions.
+                </div>
+              )}
+
+              {/* Formulaire d'ajout */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <textarea
+                  value={newGoalDesc}
+                  onChange={(e) => setNewGoalDesc(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddGoal(); } }}
+                  placeholder="Ex : Intégrer une école d'ingénieurs, devenir médecin, créer une startup…"
+                  rows={2}
+                  style={{
+                    width: "100%", padding: "10px 14px",
+                    border: "1.5px solid var(--border-dark)", borderRadius: 8,
+                    fontSize: "0.875rem", outline: "none", resize: "vertical",
+                    fontFamily: "inherit", lineHeight: 1.5,
+                    transition: "border-color 0.2s",
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
+                  onBlur={(e) => e.target.style.borderColor = "var(--border-dark)"}
+                />
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <input
+                    type="number"
+                    min="2024"
+                    max="2040"
+                    value={newGoalYear}
+                    onChange={(e) => setNewGoalYear(e.target.value)}
+                    placeholder="Année cible (ex: 2027)"
+                    style={{
+                      width: 180, padding: "9px 12px",
+                      border: "1.5px solid var(--border-dark)", borderRadius: 8,
+                      fontSize: "0.875rem", outline: "none", fontFamily: "inherit",
+                      transition: "border-color 0.2s",
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
+                    onBlur={(e) => e.target.style.borderColor = "var(--border-dark)"}
+                  />
+                  <Button
+                    variant="primary" size="sm"
+                    loading={addingGoal}
+                    onClick={handleAddGoal}
+                    disabled={!newGoalDesc.trim()}
+                    style={{ background: "#1d4ed8" }}
+                  >
+                    <Plus size={15} /> Ajouter
+                  </Button>
+                </div>
+              </div>
+
+              {/* Suggestions rapides */}
+              <div style={{ marginTop: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, fontSize: "0.75rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  <Sparkles size={12} /> Exemples
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {[
+                    "Intégrer une grande école",
+                    "Devenir médecin",
+                    "Travailler dans l'informatique",
+                    "Créer une entreprise",
+                    "Études à l'étranger",
+                    "Licence en droit",
+                    "Devenir enseignant",
+                    "Master en finance",
+                  ]
+                    .filter((s) => !goals.some((g) => g.description.toLowerCase() === s.toLowerCase()))
+                    .map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setNewGoalDesc(s)}
+                        style={{
+                          padding: "4px 12px",
+                          background: "var(--surface-2)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 999, fontSize: "0.78rem",
+                          color: "var(--text-secondary)", cursor: "pointer",
+                          transition: "all 0.15s", fontFamily: "inherit",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#eff6ff";
+                          e.currentTarget.style.borderColor = "#bfdbfe";
+                          e.currentTarget.style.color = "#1d4ed8";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = "var(--surface-2)";
