@@ -14,4 +14,9 @@ export const profileService = {
   getGoals:    ()     => api.get("/goals/").then((r) => r.data.results ?? r.data),
   addGoal:     (data) => api.post("/goals/", data).then((r) => r.data),
   deleteGoal:  (id)   => api.delete(`/goals/${id}/`),
+
+  // Activités extrascolaires
+  getActivities:    ()     => api.get("/activities/").then((r) => r.data.results ?? r.data),
+  addActivity:      (data) => api.post("/activities/", data).then((r) => r.data),
+  deleteActivity:   (id)   => api.delete(`/activities/${id}/`),
 };
