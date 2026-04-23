@@ -9,6 +9,11 @@ class ScholarpathConfig(AppConfig):
     def ready(self):
         """Auto-seed subjects and orientation fields on first startup."""
         try:
+            from django.db import connection
+            existing = connection.introspection.table_names()
+            # Only seed if tables already exist (i.e. migrations have run)
+            if "scholarpath_subject" not in existing:
+                return
             from .models import Subject, OrientationField
             if not Subject.objects.exists():
                 self._seed_subjects()
